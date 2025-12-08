@@ -12,3 +12,103 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+
+enum Role {
+  admin
+  employee
+}
+
+enum ProductStatus {
+  available
+  unavailable
+}
+
+enum ProductType {
+  snack
+  drink
+  food
+}
+
+enum OrderType {
+  dine_in
+  take_out
+}
+
+enum OrderPaymentMethod {
+  qris
+  cash
+  card
+}
+
+enum OrderTransactionStatus {
+  success
+  fail
+}
+
+model User {
+  id String @id
+  username String @unique
+  fullname String 
+  password String
+  created_at DateTime
+  
+  // Enumerate reference
+  role Role @default(employee)
+
+  @@map("users")
+}
+
+model Product {
+  id  String @id
+  name String
+  image String?
+  price Decimal
+  created_at DateTime
+  updated_at DateTime
+  
+  // Enumerate reference
+  status ProductStatus @default(unavailable)
+  type ProductType 
+
+  // Reference for OrderDetail 
+  user_order OrderDetail[]
+
+  @@map("products")
+}
+
+model Order {
+  id String @id
+  customer_name String
+  table_number Int
+  total_price Decimal
+
+  // Enumerate reference
+  transaction_status OrderTransactionStatus
+  payment_method OrderPaymentMethod @default(cash)
+  type OrderType @default(dine_in)
+
+  // Reference for OrderDetail 
+  cutsomer_user OrderDetail[]
+
+  @@map("orders")
+}
+
+
+model OrderDetail {
+  product_id String
+  order_id String
+  employee_id String
+  current_price Decimal
+  sub_total_price Decimal
+  quantity Int
+  note String?
+
+  // Enumerate reference
+  product Product @relation(fields: [product_id], references: [id])
+  order Order @relation(fields: [order_id], references: [id])
+
+  // Composite Primary Key
+  @@id([product_id,order_id])
+  @@map("order_detail")
+}
