@@ -47,11 +47,11 @@ enum OrderTransactionStatus {
 }
 
 model User {
-  id String @id
+  id String @id @default(uuid())
   username String @unique
   fullname String 
   password String
-  created_at DateTime
+  created_at DateTime @default(now())
   
   // Enumerate reference
   role Role @default(employee)
@@ -60,12 +60,12 @@ model User {
 }
 
 model Product {
-  id  String @id
+  id  String @id @default(uuid())
   name String
   image String?
   price Decimal
-  created_at DateTime
-  updated_at DateTime
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
   
   // Enumerate reference
   status ProductStatus @default(unavailable)
@@ -78,10 +78,11 @@ model Product {
 }
 
 model Order {
-  id String @id
+  id String @id @default(uuid())
   customer_name String
   table_number Int
   total_price Decimal
+  created_at DateTime @default(now())
 
   // Enumerate reference
   transaction_status OrderTransactionStatus
