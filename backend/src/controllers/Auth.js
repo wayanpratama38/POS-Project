@@ -1,49 +1,47 @@
-import {RegisterValidator, LoginValidator} from '../validator/Auth.js'
-import AuthService from '../services/Auth.js'
+import { RegisterValidator, LoginValidator } from '../validator/Auth.js';
+import AuthService from '../services/Auth.js';
 
-export default class AuthController { 
-    
-    constructor() {
-        // Binding all the controller
-        this.registerUser = this.registerUser.bind(this);
-        this.loginUser = this.loginUser.bind(this);
-        this.service = new AuthService();
-    }
+export default class AuthController {
+ constructor() {
+  // Binding all the controller
+  this.registerUser = this.registerUser.bind(this);
+  this.loginUser = this.loginUser.bind(this);
+  this.service = new AuthService();
+ }
 
-    // POST Register User
-    async registerUser(req,res,next){
-        // Get request body
-        const body = req.body;
-        
-        // Validate user input
-        RegisterValidator.parse(body.fullname,body.username,body.password);
+ // POST Register User
+ async registerUser(req, res, next) {
+  // Get request body
+  const body = req.body;
 
-        // Use AuthService
-        const data = await this.service.registerUser({...body});
+  // Validate user input
+  RegisterValidator.parse(body.fullname, body.username, body.password);
 
-        // Send response
-        return res.status(201).json({
-            status: "success",
-            message : "Berhasil membuat akun baru",
-            data : {...data}
-        })
-    }
+  // Use AuthService
+  const data = await this.service.registerUser({ ...body });
 
-    // POST Login User
-    async loginUser(req,res,next){
-        // Get request body
-        const body = req.body;
+  // Send response
+  return res.status(201).json({
+   status: 'success',
+   message: 'Berhasil membuat akun baru',
+   data: { ...data },
+  });
+ }
 
-        // Validate user input
-        LoginValidator.parse(body.username,body.password);
+ // POST Login User
+ async loginUser(req, res, next) {
+  // Get request body
+  const body = req.body;
 
-        // Use AuthService.loginUser()
-        await this.service.loginUser({...body});
+  // Validate user input
+  LoginValidator.parse(body.username, body.password);
 
-        return res.status(200).json({
-            status : "success",
-            message : "Berhasil login"
-        })
-    }
+  // Use AuthService.loginUser()
+  await this.service.loginUser({ ...body });
 
+  return res.status(200).json({
+   status: 'success',
+   message: 'Berhasil login',
+  });
+ }
 }
