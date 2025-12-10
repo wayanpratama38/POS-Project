@@ -1,4 +1,9 @@
 import ProductService from '../services/Product.js';
+import HTTPError from '../utils/HTTPError.js';
+import {
+	BulkProductValidator,
+	SingleProductValidator,
+} from '../validator/Product.js';
 
 export default class ProductController {
 	constructor() {
@@ -14,19 +19,29 @@ export default class ProductController {
 	// POST Add New Product (singluar)
 	async addSingleProduct(req, res, next) {
 		// Get request body
-		const body = req.body;
+		const {name, image, price, type} = req.body;
 
-		//TODO Validate body
+		try {
+			// Validate request body
+			const validatedData = SingleProductValidator.parse({
+				name,
+				image,
+				price,
+				type,
+			});
 
-		// Service
-		const data = await this.service.addSingleProduct({...body});
+			// Service
+			const data = await this.service.addSingleProduct({...validatedData});
 
-		// Response
-		return res.status(201).json({
-			status: 'success',
-			message: 'Berhasil menambahkan produk baru',
-			data: {...data},
-		});
+			// Response
+			return res.status(201).json({
+				status: 'success',
+				message: 'Berhasil menambahkan produk baru',
+				data: {...data},
+			});
+		} catch (err) {
+			next(err);
+		}
 	}
 
 	// POST Add New Product (bulk)
@@ -34,30 +49,39 @@ export default class ProductController {
 		// Get request body
 		const body = req.body;
 
-		// TODO Validate body
+		try {
+			// Validate request body
+			const validatedData = BulkProductValidator.parse(body);
 
-		// Service
-		const allData = await this.service.addBulkProduct(body);
+			// Service
+			const allData = await this.service.addBulkProduct(validatedData);
 
-		// Response
-		return res.status(201).json({
-			status: 'success',
-			message: 'Berhasil menambahkan banyak produk',
-			data: allData,
-		});
+			// Response
+			return res.status(201).json({
+				status: 'success',
+				message: 'Berhasil menambahkan banyak produk',
+				data: allData,
+			});
+		} catch (err) {
+			next(err);
+		}
 	}
 
 	// GET Get All Product
 	async getAllProduct(req, res, next) {
-		// Service
-		const allData = await this.service.getAllProduct();
+		try {
+			// Service
+			const allData = await this.service.getAllProduct();
 
-		// Response
-		return res.status(200).json({
-			status: 'success',
-			message: 'Berhasil mendapatkan semua data produk',
-			data: allData,
-		});
+			// Response
+			return res.status(200).json({
+				status: 'success',
+				message: 'Berhasil mendapatkan semua data produk',
+				data: allData,
+			});
+		} catch (err) {
+			next(err);
+		}
 	}
 
 	// GET Get Certain Product
@@ -65,14 +89,18 @@ export default class ProductController {
 		// Get request param
 		const {id} = req.params;
 
-		// Service
-		const data = await this.service.getProductById({id});
+		try {
+			// Service
+			const data = await this.service.getProductById({id});
 
-		// Response
-		return res.status(200).json({
-			status: 'success',
-			message: 'Berhasil mendapatkan data produk',
-			data: data,
-		});
+			// Response
+			return res.status(200).json({
+				status: 'success',
+				message: 'Berhasil mendapatkan data produk',
+				data: data,
+			});
+		} catch (err) {
+			next(err);
+		}
 	}
 }

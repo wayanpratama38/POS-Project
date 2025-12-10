@@ -5,15 +5,19 @@ import HTTPError from '../utils/HTTPError.js';
 export default class AuthService {
 	// POST Register User
 	async registerUser({fullname, username, password}) {
+		// Check username if available
 		const isUserAvailable = await prisma.user.findUnique({
 			where: {username: username},
 		});
 
-		if (!isUserAvailable) {
+		// throw new error if username already taken
+		if (isUserAvailable) {
 			throw new HTTPError('Username sudah digunakan', 400);
 		}
 
+		// hashed password
 		const hashedPassword = await bcrypt.hash(password, 10);
+		// create new user
 		const newUser = await prisma.user.create({
 			data: {
 				username: username,

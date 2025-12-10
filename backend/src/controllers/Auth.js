@@ -12,36 +12,48 @@ export default class AuthController {
 	// POST Register User
 	async registerUser(req, res, next) {
 		// Get request body
-		const body = req.body;
+		const {fullname, username, password} = req.body;
 
-		// Validate user input
-		RegisterValidator.parse(body.fullname, body.username, body.password);
+		try {
+			// Validate user input
+			const validatedData = RegisterValidator.parse({
+				fullname,
+				username,
+				password,
+			});
 
-		// Use AuthService
-		const data = await this.service.registerUser({...body});
+			// Use AuthService
+			const data = await this.service.registerUser({...validatedData});
 
-		// Send response
-		return res.status(201).json({
-			status: 'success',
-			message: 'Berhasil membuat akun baru',
-			data: {...data},
-		});
+			// Send response
+			return res.status(201).json({
+				status: 'success',
+				message: 'Berhasil membuat akun baru',
+				data: {...data},
+			});
+		} catch (err) {
+			next(err);
+		}
 	}
 
 	// POST Login User
 	async loginUser(req, res, next) {
 		// Get request body
-		const body = req.body;
+		const {username, password} = req.body;
 
-		// Validate user input
-		LoginValidator.parse(body.username, body.password);
+		try {
+			// Validate user input
+			const validatedData = LoginValidator.parse({username, password});
 
-		// Use AuthService.loginUser()
-		await this.service.loginUser({...body});
+			// Use AuthService.loginUser()
+			await this.service.loginUser({...validatedData});
 
-		return res.status(200).json({
-			status: 'success',
-			message: 'Berhasil login',
-		});
+			return res.status(200).json({
+				status: 'success',
+				message: 'Berhasil login',
+			});
+		} catch (err) {
+			next(err);
+		}
 	}
 }

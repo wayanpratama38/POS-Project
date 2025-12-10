@@ -12,6 +12,14 @@ export default class ProductService {
 				status: status,
 				type: type,
 			},
+			select: {
+				id: true,
+				name: true,
+				image: true,
+				price: true,
+				status: true,
+				type: true,
+			},
 		});
 
 		return {...productData};
@@ -21,6 +29,14 @@ export default class ProductService {
 	async addBulkProduct(productList) {
 		const productsData = await prisma.product.createManyAndReturn({
 			data: productList,
+			select: {
+				id: true,
+				name: true,
+				image: true,
+				price: true,
+				status: true,
+				type: true,
+			},
 		});
 
 		return productsData;
