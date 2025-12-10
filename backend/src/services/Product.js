@@ -63,7 +63,7 @@ export default class ProductService {
 	}
 
 	// GET Get Certain Product
-	async getProductById({id}) {
+	async getProductById(id) {
 		const productData = await prisma.product.findFirst({
 			where: {
 				id: id,
@@ -85,8 +85,31 @@ export default class ProductService {
 	}
 
 	// PATCH Update Product Information
+	async updateProductInformation(id, newInformation) {
+		// Check if product data is available
+		await this.getProductById(id);
 
-	// PATCH Update Product Availability
+		const productData = await prisma.product.update({
+			where: {
+				id: id,
+			},
+			data: {...newInformation},
+			select: {
+				name: true,
+				image: true,
+				price: true,
+				type: true,
+				status: true,
+			},
+		});
+
+		return {...productData};
+	}
 
 	// DELETE Delete Certain Product
+	async deleteProduct(id) {
+		await prisma.product.delete({
+			where: {id: id},
+		});
+	}
 }

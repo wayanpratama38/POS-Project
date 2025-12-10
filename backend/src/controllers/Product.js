@@ -3,6 +3,7 @@ import HTTPError from '../utils/HTTPError.js';
 import {
 	BulkProductValidator,
 	SingleProductValidator,
+	UpdateProductValidator,
 } from '../validator/Product.js';
 
 export default class ProductController {
@@ -12,6 +13,8 @@ export default class ProductController {
 		this.addBulkProduct = this.addBulkProduct.bind(this);
 		this.getAllProduct = this.getAllProduct.bind(this);
 		this.getProductById = this.getProductById.bind(this);
+		this.updateProductInformation = this.updateProductInformation.bind(this);
+		this.deleteProduct = this.deleteProduct.bind(this);
 
 		this.service = new ProductService();
 	}
@@ -91,13 +94,52 @@ export default class ProductController {
 
 		try {
 			// Service
-			const data = await this.service.getProductById({id});
+			const data = await this.service.getProductById(id);
 
 			// Response
 			return res.status(200).json({
 				status: 'success',
 				message: 'Berhasil mendapatkan data produk',
 				data: data,
+			});
+		} catch (err) {
+			next(err);
+		}
+	}
+
+	// PATCH Update Product Information
+	async updateProductInformation(req, res, next) {
+		// Get request parameter and body
+		const {id} = req.params;
+		const newInformation = req.body;
+
+		try {
+			// Validate request body
+			const validatedData = UpdateProductValidator.parse(newInformation);
+			// Service
+			const productData = await this.service.updateProductInformation(
+				id,
+				validatedData
+			);
+
+			return res.status(200).json({
+				status: 'success',
+				message: 'Berhasil merubah informasi dari produk',
+				data: productData,
+			});
+		} catch (err) {
+			next(err);
+		}
+	}
+
+	// DELETE Delete Certain Product
+	async deleteProduct(req, res, next) {
+		const {id} = req.params;
+		try {
+			await this.service.deleteProduct(id);
+			return res.status(200).json({
+				status: 'success',
+				message: 'Berhasil menghapus produk',
 			});
 		} catch (err) {
 			next(err);
