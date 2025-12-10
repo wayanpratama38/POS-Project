@@ -1,15 +1,14 @@
-import { z } from 'zod';
+import {z} from 'zod';
 
 const RegisterValidator = z.json({
-  fullname : z.string(),
-  username : z.string(),
-  password : z.string().min(8)
-})
+	fullname: z.string(),
+	username: z.string(),
+	password: z.string().min(8),
+});
 
 const LoginValidator = z.json({
-  username : z.string(),
-  password : z.string().min(8)
-})
+	username: z.string(),
+	password: z.string().min(8),
+});
 
-export { RegisterValidator, LoginValidator };
-
+export {RegisterValidator, LoginValidator};
