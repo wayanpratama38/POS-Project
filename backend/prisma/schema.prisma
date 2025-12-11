@@ -79,7 +79,7 @@ model Product {
 
 model Order {
   id String @id @default(uuid())
-  customer_name String
+  customer_name String?
   table_number Int?
   total_price Decimal
   created_at DateTime @default(now())
@@ -87,7 +87,7 @@ model Order {
   // Enumerate reference
   transaction_status OrderTransactionStatus
   payment_method OrderPaymentMethod @default(cash)
-  type OrderType @default(dine_in) @unique
+  type OrderType @default(dine_in)
 
   // Reference for OrderDetail 
   cutsomer_user OrderDetail[]
