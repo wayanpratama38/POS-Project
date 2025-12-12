@@ -56,6 +56,8 @@ model User {
   // Enumerate reference
   role Role @default(employee)
 
+  handled_order OrderDetail[]
+
   @@map("users")
 }
 
@@ -72,7 +74,7 @@ model Product {
   type ProductType 
 
   // Reference for OrderDetail 
-  user_order OrderDetail[]
+  order_items OrderDetail[]
 
   @@map("products")
 }
@@ -90,7 +92,7 @@ model Order {
   type OrderType @default(dine_in)
 
   // Reference for OrderDetail 
-  cutsomer_user OrderDetail[]
+  order_items OrderDetail[]
 
   @@map("orders")
 }
@@ -99,7 +101,7 @@ model Order {
 model OrderDetail {
   product_id String
   order_id String
-  employee_id String
+  employee_id String?
   current_price Decimal
   sub_total_price Decimal
   quantity Int
@@ -108,6 +110,7 @@ model OrderDetail {
   // Enumerate reference
   product Product @relation(fields: [product_id], references: [id])
   order Order @relation(fields: [order_id], references: [id])
+  employee User? @relation(fields: [employee_id], references: [id])
 
   // Composite Primary Key
   @@id([product_id,order_id])
