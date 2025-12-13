@@ -106,6 +106,8 @@ model OrderDetail {
   sub_total_price Decimal
   quantity Int
   note String?
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   // Enumerate reference
   product Product @relation(fields: [product_id], references: [id])
