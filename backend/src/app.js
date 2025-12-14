@@ -1,8 +1,6 @@
 import Express from 'express';
-import prisma from '../src/config/DBConnection.js';
+import IndexedRoute from './routes/Index.js';
 import AuthRouter from './routes/Auth.js';
-import ProductRouter from './routes/Product.js';
-import OrderRouter from './routes/Order.js';
 
 const app = new Express();
 app.use(Express.json());
@@ -11,10 +9,11 @@ app.get('/', (req, res) => {
 	res.json('Hello World!');
 });
 
+// Mount auth router
 app.use(AuthRouter);
-app.use(ProductRouter);
-app.use(OrderRouter);
+// Mount all indexed route
+app.use(IndexedRoute);
 
-app.listen(3000, 'localhost', () => {
-	console.log('Running at localhost:3000');
+app.listen(process.env.LOCAL_PORT, 'localhost', () => {
+	console.log(`Running at localhost:${process.env.LOCAL_PORT}`);
 });

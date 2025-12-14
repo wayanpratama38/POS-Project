@@ -46,11 +46,12 @@ export default class AuthController {
 			const validatedData = LoginValidator.parse({username, password});
 
 			// Use AuthService.loginUser()
-			await this.service.loginUser({...validatedData});
+			const data = await this.service.loginUser({...validatedData});
 
 			return res.status(200).json({
 				status: 'success',
 				message: 'Berhasil login',
+				data: data,
 			});
 		} catch (err) {
 			next(err);

@@ -1,5 +1,6 @@
 import prisma from '../config/DBConnection.js';
 import bcrypt from 'bcrypt';
+import json from 'jsonwebtoken';
 import HTTPError from '../utils/HTTPError.js';
 
 export default class AuthService {
@@ -39,6 +40,7 @@ export default class AuthService {
 		const userData = await prisma.user.findUnique({
 			where: {username: username},
 			select: {
+				username: true,
 				password: true,
 			},
 		});
@@ -47,5 +49,15 @@ export default class AuthService {
 		if (!userData || !(await bcrypt.compare(password, userData.password))) {
 			throw new HTTPError('Username dan password tidak ditemukan!', 400);
 		}
+
+		// create token
+		const JWTToken = json.sign(
+			{username: userData.username, password: userData.password},
+			process.env.JWT_SECRET_KEY,
+			{expiresIn: '1h'}
+		);
+
+		// Return user credential and token (i think after this it will just JWT Token returned)
+		return {...userData, token: JWTToken};
 	}
 }
