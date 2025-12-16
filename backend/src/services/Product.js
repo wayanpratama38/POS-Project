@@ -57,7 +57,7 @@ export default class ProductService {
 		if (checkProductDuplicateResult) {
 			throw new HTTPError(
 				`Terjadi duplikat produk dengan nama : ${checkProductDuplicateResult}`,
-				401
+				409
 			);
 		}
 
@@ -90,7 +90,7 @@ export default class ProductService {
 		});
 
 		if (!productsData) {
-			throw new HTTPError('Produk belum ada', 400);
+			throw new HTTPError('Produk belum ada', 404);
 		}
 
 		return productsData;
@@ -112,7 +112,7 @@ export default class ProductService {
 		});
 
 		if (!productData) {
-			throw new HTTPError('Produk dengan ID tersebut tidak ditemukan', 400);
+			throw new HTTPError('Produk dengan ID tersebut tidak ditemukan', 404);
 		}
 
 		return {...productData};

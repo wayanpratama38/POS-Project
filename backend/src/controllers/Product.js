@@ -1,5 +1,4 @@
 import ProductService from '../services/Product.js';
-import HTTPError from '../utils/HTTPError.js';
 import {
 	BulkProductValidator,
 	SingleProductValidator,
