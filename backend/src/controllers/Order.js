@@ -1,4 +1,5 @@
 import OrderService from '../services/Order.js';
+import {AddNewOrderValidator} from '../validator/Order.js';
 
 export default class OrderController {
 	constructor() {
@@ -14,10 +15,10 @@ export default class OrderController {
 	// POST Create New Order
 	async addOrder(req, res, next) {
 		const body = req.body;
-
-		//TODO Validate user input
-
 		try {
+			// Validate user input
+			AddNewOrderValidator.parse(body);
+
 			const data = await this.service.addOrder(body);
 
 			return res.status(201).json({
@@ -33,9 +34,6 @@ export default class OrderController {
 	// GET Get Order Detail
 	async getOrderDetail(req, res, next) {
 		const {id} = {...req.params};
-
-		//TODO validate id
-
 		try {
 			const data = await this.service.getOrderDetail(id);
 			return res.status(200).json({
