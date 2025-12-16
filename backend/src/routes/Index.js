@@ -5,8 +5,6 @@ import {Router} from 'express';
 
 const IndexedRoute = new Router();
 
-// Use Middleware for all route except AuthRouter.
-IndexedRoute.use(authMiddleware);
 IndexedRoute.use([OrderRouter, ProductRouter]);
 
 export default IndexedRoute;

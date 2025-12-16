@@ -41,6 +41,7 @@ export default class AuthService {
 			where: {username: username},
 			select: {
 				username: true,
+				id: true,
 				password: true,
 			},
 		});
@@ -52,12 +53,23 @@ export default class AuthService {
 
 		// create token
 		const JWTToken = json.sign(
-			{username: userData.username, password: userData.password},
+			{username: userData.username, id: userData.id},
 			process.env.JWT_SECRET_KEY,
 			{expiresIn: '1h'}
 		);
 
 		// Return user credential and token (i think after this it will just JWT Token returned)
 		return {...userData, token: JWTToken};
+	}
+
+	// GET Check user availabilty
+	async isUserAvailable(id) {
+		const data = await prisma.user.findUnique({
+			where: {id: id},
+		});
+		if (!data) {
+			throw new HTTPError('User tidak ditemukan', 401);
+		}
+		return data;
 	}
 }
