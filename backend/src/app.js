@@ -3,6 +3,8 @@ import IndexedRoute from './routes/Index.js';
 import AuthRouter from './routes/Auth.js';
 import errorLog from './middlewares/ErrorLogMiddleware.js';
 import authMiddleware from './middlewares/AuthMiddleware.js';
+import swaggerUi from 'swagger-ui-express';
+import swaggerOutput from './docs/swagger-output.js';
 
 const app = new Express();
 app.use(Express.json());
@@ -11,6 +13,8 @@ app.get('/', (req, res) => {
 	res.json('Hello World!');
 });
 
+// Create swagger /api-docs
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerOutput));
 // Mount auth router
 app.use(AuthRouter);
 // Use Middleware for all route except AuthRouter.
