@@ -1,25 +1,13 @@
-import ProductService from '../services/Product.js';
+import {ProductService} from '../services/Product.js';
 import {
 	BulkProductValidator,
 	SingleProductValidator,
 	UpdateProductValidator,
 } from '../validator/Product.js';
 
-export default class ProductController {
-	constructor() {
-		// binding function
-		this.addSingleProduct = this.addSingleProduct.bind(this);
-		this.addBulkProduct = this.addBulkProduct.bind(this);
-		this.getAllProduct = this.getAllProduct.bind(this);
-		this.getProductById = this.getProductById.bind(this);
-		this.updateProductInformation = this.updateProductInformation.bind(this);
-		this.deleteProduct = this.deleteProduct.bind(this);
-
-		this.service = new ProductService();
-	}
-
+export const ProductController = {
 	// POST Add New Product (singluar)
-	async addSingleProduct(req, res, next) {
+	addSingleProduct: async (req, res, next) => {
 		// Get request body
 		const {name, image, price, type} = req.body;
 
@@ -33,7 +21,7 @@ export default class ProductController {
 			});
 
 			// Service
-			const data = await this.service.addSingleProduct({...validatedData});
+			const data = await ProductService.addSingleProduct({...validatedData});
 
 			// Response
 			return res.status(201).json({
@@ -44,10 +32,10 @@ export default class ProductController {
 		} catch (err) {
 			next(err);
 		}
-	}
+	},
 
 	// POST Add New Product (bulk)
-	async addBulkProduct(req, res, next) {
+	addBulkProduct: async (req, res, next) => {
 		// Get request body
 		const body = req.body;
 
@@ -56,7 +44,7 @@ export default class ProductController {
 			const validatedData = BulkProductValidator.parse(body);
 
 			// Service
-			const allData = await this.service.addBulkProduct(validatedData);
+			const allData = await ProductService.addBulkProduct(validatedData);
 
 			// Response
 			return res.status(201).json({
@@ -67,13 +55,13 @@ export default class ProductController {
 		} catch (err) {
 			next(err);
 		}
-	}
+	},
 
 	// GET Get All Product
-	async getAllProduct(req, res, next) {
+	getAllProduct: async (req, res, next) => {
 		try {
 			// Service
-			const allData = await this.service.getAllProduct();
+			const allData = await ProductService.getAllProduct();
 
 			// Response
 			return res.status(200).json({
@@ -84,16 +72,16 @@ export default class ProductController {
 		} catch (err) {
 			next(err);
 		}
-	}
+	},
 
 	// GET Get Certain Product
-	async getProductById(req, res, next) {
+	getProductById: async (req, res, next) => {
 		// Get request param
 		const {id} = req.params;
 
 		try {
 			// Service
-			const data = await this.service.getProductById(id);
+			const data = await ProductService.getProductById(id);
 
 			// Response
 			return res.status(200).json({
@@ -104,10 +92,10 @@ export default class ProductController {
 		} catch (err) {
 			next(err);
 		}
-	}
+	},
 
 	// PATCH Update Product Information
-	async updateProductInformation(req, res, next) {
+	updateProductInformation: async (req, res, next) => {
 		// Get request parameter and body
 		const {id} = req.params;
 		const newInformation = req.body;
@@ -116,7 +104,7 @@ export default class ProductController {
 			// Validate request body
 			const validatedData = UpdateProductValidator.parse(newInformation);
 			// Service
-			const productData = await this.service.updateProductInformation(
+			const productData = await ProductService.updateProductInformation(
 				id,
 				validatedData
 			);
@@ -129,13 +117,13 @@ export default class ProductController {
 		} catch (err) {
 			next(err);
 		}
-	}
+	},
 
 	// DELETE Delete Certain Product
-	async deleteProduct(req, res, next) {
+	deleteProduct: async (req, res, next) => {
 		const {id} = req.params;
 		try {
-			await this.service.deleteProduct(id);
+			await ProductService.deleteProduct(id);
 			return res.status(200).json({
 				status: 'success',
 				message: 'Berhasil menghapus produk',
@@ -143,5 +131,5 @@ export default class ProductController {
 		} catch (err) {
 			next(err);
 		}
-	}
-}
+	},
+};

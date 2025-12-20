@@ -1,9 +1,9 @@
 import prisma from '../config/DBConnection.js';
 import HTTPError from '../utils/HTTPError.js';
 
-export default class ProductService {
+export const ProductService = {
 	// POST Add New Product (singular)
-	async addSingleProduct({name, image, price, status, type}) {
+	addSingleProduct: async ({name, image, price, status, type}) => {
 		// check product is available or not
 		const isAvailable = await prisma.product.findFirst({
 			where: {name: name},
@@ -34,10 +34,10 @@ export default class ProductService {
 		});
 
 		return {...productData};
-	}
+	},
 
 	// POST Add New Product (bulk)
-	async addBulkProduct(productList) {
+	addBulkProduct: async (productList) => {
 		// check product input is already in database or not
 		const checkProductDuplicate = await Promise.all(
 			productList.map(async (product) => {
@@ -74,10 +74,10 @@ export default class ProductService {
 		});
 
 		return productsData;
-	}
+	},
 
 	// GET Get All Product
-	async getAllProduct() {
+	getAllProduct: async () => {
 		const productsData = await prisma.product.findMany({
 			select: {
 				id: true,
@@ -94,10 +94,10 @@ export default class ProductService {
 		}
 
 		return productsData;
-	}
+	},
 
 	// GET Get Certain Product
-	async getProductById(id) {
+	getProductById: async (id) => {
 		const productData = await prisma.product.findFirst({
 			where: {
 				id: id,
@@ -116,10 +116,10 @@ export default class ProductService {
 		}
 
 		return {...productData};
-	}
+	},
 
 	// PATCH Update Product Information
-	async updateProductInformation(id, newInformation) {
+	updateProductInformation: async (id, newInformation) => {
 		// Check if product data is available
 		await this.getProductById(id);
 
@@ -138,10 +138,10 @@ export default class ProductService {
 		});
 
 		return {...productData};
-	}
+	},
 
 	// DELETE Delete Certain Product
-	async deleteProduct(id) {
+	deleteProduct: async (id) => {
 		// Check if product data is available
 		await this.getProductById(id);
 
@@ -149,5 +149,5 @@ export default class ProductService {
 		await prisma.product.delete({
 			where: {id: id},
 		});
-	}
-}
+	},
+};
