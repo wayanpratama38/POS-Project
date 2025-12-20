@@ -3,9 +3,9 @@ import bcrypt from 'bcrypt';
 import json from 'jsonwebtoken';
 import HTTPError from '../utils/HTTPError.js';
 
-export default class AuthService {
+export const AuthService = {
 	// POST Register User
-	async registerUser({fullname, username, password}) {
+	registerUser: async ({fullname, username, password}) => {
 		// Check username if available
 		const isUserAvailable = await prisma.user.findUnique({
 			where: {username: username},
@@ -33,10 +33,10 @@ export default class AuthService {
 		});
 
 		return {...newUser};
-	}
+	},
 
 	// POST Login User
-	async loginUser({username, password}) {
+	loginUser: async ({username, password}) => {
 		const userData = await prisma.user.findUnique({
 			where: {username: username},
 			select: {
@@ -60,10 +60,10 @@ export default class AuthService {
 
 		// Return user credential and token (i think after this it will just JWT Token returned)
 		return {...userData, token: JWTToken};
-	}
+	},
 
 	// GET Check user availabilty
-	async isUserAvailable(id) {
+	isUserAvailable: async (id) => {
 		const data = await prisma.user.findUnique({
 			where: {id: id},
 		});
@@ -71,5 +71,5 @@ export default class AuthService {
 			throw new HTTPError('User tidak ditemukan', 401);
 		}
 		return data;
-	}
-}
+	},
+};

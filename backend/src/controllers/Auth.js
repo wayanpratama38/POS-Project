@@ -1,16 +1,9 @@
 import {RegisterValidator, LoginValidator} from '../validator/Auth.js';
-import AuthService from '../services/Auth.js';
+import {AuthService} from '../services/Auth.js';
 
-export default class AuthController {
-	constructor() {
-		// Binding all the controller
-		this.registerUser = this.registerUser.bind(this);
-		this.loginUser = this.loginUser.bind(this);
-		this.service = new AuthService();
-	}
-
+export const AuthController = {
 	// POST Register User
-	async registerUser(req, res, next) {
+	registerUser: async (req, res, next) => {
 		// Get request body
 		const {fullname, username, password} = req.body;
 
@@ -23,7 +16,7 @@ export default class AuthController {
 			});
 
 			// Use AuthService
-			const data = await this.service.registerUser({...validatedData});
+			const data = await AuthService.registerUser({...validatedData});
 
 			// Send response
 			return res.status(201).json({
@@ -34,10 +27,10 @@ export default class AuthController {
 		} catch (err) {
 			next(err);
 		}
-	}
+	},
 
 	// POST Login User
-	async loginUser(req, res, next) {
+	loginUser: async (req, res, next) => {
 		// Get request body
 		const {username, password} = req.body;
 
@@ -46,7 +39,7 @@ export default class AuthController {
 			const validatedData = LoginValidator.parse({username, password});
 
 			// Use AuthService.loginUser()
-			const data = await this.service.loginUser({...validatedData});
+			const data = await AuthService.loginUser({...validatedData});
 
 			return res.status(200).json({
 				status: 'success',
@@ -56,5 +49,5 @@ export default class AuthController {
 		} catch (err) {
 			next(err);
 		}
-	}
-}
+	},
+};

@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import AuthService from '../services/Auth.js';
+import {AuthService} from '../services/Auth.js';
 
 const authMiddleware = async (req, res, next) => {
 	const header = req.header('Authorization');
@@ -10,8 +10,7 @@ const authMiddleware = async (req, res, next) => {
 
 	try {
 		const decode = jwt.decode(token, process.env.JWT_SECRET_KEY);
-		const service = new AuthService();
-		const checkUser = await service.isUserAvailable(decode.id);
+		const checkUser = await AuthService.isUserAvailable(decode.id);
 
 		if (checkUser) {
 			req.user = decode;
