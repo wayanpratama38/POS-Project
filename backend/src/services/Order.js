@@ -1,22 +1,17 @@
 import prisma from '../config/DBConnection.js';
-import ProductService from './Product.js';
+import {ProductService} from './Product.js';
 
-export default class OrderService {
-	constructor() {
-		this.countTotalPrice = this.countTotalPrice.bind(this);
-		this.productService = new ProductService();
-	}
-
+export const OrderService = {
 	// Count total price of the selected items/products
-	countTotalPrice(items) {
+	countTotalPrice: (items) => {
 		return items.reduce((sum, item) => sum + item.sub_total_price, 0);
-	}
+	},
 
 	// Get the product information, and return id, quantity, note, current price, and sub total price
-	async getProductInformation(items) {
+	getProductInformation: async (items) => {
 		return Promise.all(
 			items.map(async (item) => {
-				const data = await this.productService.getProductById(item.id);
+				const data = await ProductService.getProductById(item.id);
 
 				return {
 					id: item.id,
@@ -27,10 +22,10 @@ export default class OrderService {
 				};
 			})
 		);
-	}
+	},
 
 	// POST Create New Order
-	async addOrder(item) {
+	addOrder: async (item) => {
 		// 1.Get id of the item
 		const {customer_name, order_type, table_number, payment_method, items} = {
 			...item,
@@ -82,9 +77,9 @@ export default class OrderService {
 			// 5. Return created order
 			return order;
 		});
-	}
+	},
 
-	async getOrderDetail(order_id) {
+	getOrderDetail: async (order_id) => {
 		// 1. Get the order data from order table
 		const orderData = await prisma.order.findUnique({
 			where: {id: order_id},
@@ -112,9 +107,7 @@ export default class OrderService {
 		// 3. Mapping from orderDetailData to API Contract wanted
 		const finalOrderData = await Promise.all(
 			orderDetailData.map(async (item) => {
-				const productData = await this.productService.getProductById(
-					item.product_id
-				);
+				const productData = await ProductService.getProductById(item.product_id);
 
 				return {
 					product_name: productData.name,
@@ -128,12 +121,12 @@ export default class OrderService {
 
 		// 4. Return data
 		return {...orderData, items: finalOrderData};
-	}
+	},
 
 	// GET Get all order
-	async getAllOrder() {
+	getAllOrder: async () => {
 		return await prisma.order.findMany();
-	}
+	},
 
 	// PATCH Update order detail
-}
+};

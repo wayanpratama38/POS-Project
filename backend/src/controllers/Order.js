@@ -1,25 +1,15 @@
-import OrderService from '../services/Order.js';
+import {OrderService} from '../services/Order.js';
 import {AddNewOrderValidator} from '../validator/Order.js';
 
-export default class OrderController {
-	constructor() {
-		// bind
-		this.addOrder = this.addOrder.bind(this);
-		this.getOrderDetail = this.getOrderDetail.bind(this);
-		this.getAllOrder = this.getAllOrder.bind(this);
-
-		// Service
-		this.service = new OrderService();
-	}
-
+export const OrderController = {
 	// POST Create New Order
-	async addOrder(req, res, next) {
+	addOrder: async (req, res, next) => {
 		const body = req.body;
 		try {
 			// Validate user input
 			AddNewOrderValidator.parse(body);
 
-			const data = await this.service.addOrder(body);
+			const data = await OrderService.addOrder(body);
 
 			return res.status(201).json({
 				status: 'success',
@@ -29,13 +19,13 @@ export default class OrderController {
 		} catch (err) {
 			next(err);
 		}
-	}
+	},
 
 	// GET Get Order Detail
-	async getOrderDetail(req, res, next) {
+	getOrderDetail: async (req, res, next) => {
 		const {id} = {...req.params};
 		try {
-			const data = await this.service.getOrderDetail(id);
+			const data = await OrderService.getOrderDetail(id);
 			return res.status(200).json({
 				status: 'success',
 				message: 'Berhasil mendapatkan detail order',
@@ -44,12 +34,12 @@ export default class OrderController {
 		} catch (err) {
 			next(err);
 		}
-	}
+	},
 
 	// GET Get all order
-	async getAllOrder(req, res, next) {
+	getAllOrder: async (req, res, next) => {
 		try {
-			const data = await this.service.getAllOrder();
+			const data = await OrderService.getAllOrder();
 			return res.status(200).json({
 				status: 'success',
 				message: 'Berhasil mendapatkan semua informasi order',
@@ -58,5 +48,5 @@ export default class OrderController {
 		} catch (err) {
 			next(err);
 		}
-	}
-}
+	},
+};
