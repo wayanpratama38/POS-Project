@@ -2,7 +2,6 @@ import Express from 'express';
 import IndexedRoute from './routes/Index.js';
 import AuthRouter from './routes/Auth.js';
 import errorLog from './middlewares/ErrorLogMiddleware.js';
-import authMiddleware from './middlewares/AuthMiddleware.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerOutput from './docs/swagger-output.js';
 
@@ -17,8 +16,6 @@ app.get('/', (req, res) => {
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerOutput));
 // Mount auth router
 app.use(AuthRouter);
-// Use Middleware for all route except AuthRouter.
-app.use(authMiddleware);
 // Mount all indexed route
 app.use(IndexedRoute);
 

@@ -9,11 +9,11 @@ const authMiddleware = async (req, res, next) => {
 		return res.status(401).json({status: 'fail', message: 'Akses ditolak'});
 
 	try {
-		const decode = jwt.decode(token, process.env.JWT_SECRET_KEY);
-		const checkUser = await AuthService.isUserAvailable(decode.id);
+		const verify = jwt.verify(token, process.env.JWT_SECRET_KEY);
+		const checkUser = await AuthService.isUserAvailable(verify.id);
 
 		if (checkUser) {
-			req.user = decode;
+			req.user = verify;
 			next();
 		}
 	} catch (err) {
