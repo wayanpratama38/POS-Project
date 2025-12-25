@@ -4,12 +4,14 @@ import AuthRouter from './routes/Auth.js';
 import errorLog from './middlewares/ErrorLogMiddleware.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerOutput from './docs/swagger-output.js';
+import cookieParser from 'cookie-parser';
 
 const app = new Express();
 app.use(Express.json());
+app.use(cookieParser())
 
 app.get('/', (req, res) => {
-	res.json('Hello World!');
+  res.json('Hello World!');
 });
 
 // Create swagger /api-docs
@@ -22,5 +24,5 @@ app.use(IndexedRoute);
 // Mount global error middleware
 app.use(errorLog);
 app.listen(process.env.LOCAL_PORT, 'localhost', () => {
-	console.log(`Running at localhost:${process.env.LOCAL_PORT}`);
+  console.log(`Running at localhost:${process.env.LOCAL_PORT}`);
 });

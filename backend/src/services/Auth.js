@@ -1,75 +1,109 @@
 import prisma from '../config/DBConnection.js';
 import bcrypt from 'bcrypt';
-import json from 'jsonwebtoken';
 import HTTPError from '../utils/HTTPError.js';
+import { JWTUtils } from '../utils/JWTutils.js';
+
+// Helper for set refresh token in database
+async function setRefreshToken(token) {
+  await prisma.refreshToken.create({
+    data: { refresh_token: token }
+  })
+}
+
 
 export const AuthService = {
-	// POST Register User
-	registerUser: async ({fullname, username, password}) => {
-		// Check username if available
-		const isUserAvailable = await prisma.user.findUnique({
-			where: {username: username},
-		});
+  // POST Register User
+  registerUser: async ({ fullname, username, password }) => {
+    // Check username if available
+    const isUserAvailable = await prisma.user.findUnique({
+      where: { username: username },
+    });
 
-		// throw new error if username already taken
-		if (isUserAvailable) {
-			throw new HTTPError('Username sudah digunakan', 400);
-		}
+    // throw new error if username already taken
+    if (isUserAvailable) {
+      throw new HTTPError('Username sudah digunakan', 400);
+    }
 
-		// hashed password
-		const hashedPassword = await bcrypt.hash(password, 10);
-		// create new user
-		const newUser = await prisma.user.create({
-			data: {
-				username: username,
-				fullname: fullname,
-				password: hashedPassword,
-			},
-			select: {
-				id: true,
-				fullname: true,
-				username: true,
-			},
-		});
+    // hashed password
+    const hashedPassword = await bcrypt.hash(password, 10);
+    // create new user
+    const newUser = await prisma.user.create({
+      data: {
+        username: username,
+        fullname: fullname,
+        password: hashedPassword,
+      },
+      select: {
+        id: true,
+        fullname: true,
+        username: true,
+      },
+    });
 
-		return {...newUser};
-	},
+    return { ...newUser };
+  },
 
-	// POST Login User
-	loginUser: async ({username, password}) => {
-		const userData = await prisma.user.findUnique({
-			where: {username: username},
-			select: {
-				username: true,
-				id: true,
-				password: true,
-			},
-		});
+  // POST Login User
+  loginUser: async ({ username, password }) => {
+    const userData = await prisma.user.findUnique({
+      where: { username: username },
+      select: {
+        username: true,
+        id: true,
+        password: true,
+      },
+    });
 
-		// check if user exist or password is wrong!
-		if (!userData || !(await bcrypt.compare(password, userData.password))) {
-			throw new HTTPError('Username dan password tidak ditemukan!', 400);
-		}
+    // check if user exist or password is wrong!
+    if (!userData || !(await bcrypt.compare(password, userData.password))) {
+      throw new HTTPError('Username dan password tidak ditemukan!', 400);
+    }
 
-		// create token
-		const JWTToken = json.sign(
-			{username: userData.username, id: userData.id},
-			process.env.JWT_SECRET_KEY,
-			{expiresIn: '1h'}
-		);
+    // create token
+    const payload = { username: userData.username, id: userData.id };
+    const accessToken = JWTUtils.createAccessToken(payload);
+    const refreshToken = JWTUtils.createRefreshToken(payload);
+    await setRefreshToken(refreshToken);
 
-		// Return user credential and token (i think after this it will just JWT Token returned)
-		return {...userData, token: JWTToken};
-	},
+    // Return user credential and token (i think after this it will just JWT Token returned)
+    return { ...userData, accessToken: accessToken, refreshToken: refreshToken };
+  },
 
-	// GET Check user availabilty
-	isUserAvailable: async (id) => {
-		const data = await prisma.user.findUnique({
-			where: {id: id},
-		});
-		if (!data) {
-			throw new HTTPError('User tidak ditemukan', 401);
-		}
-		return data;
-	},
+  // GET Check user availabilty
+  isUserAvailable: async (id) => {
+    const data = await prisma.user.findUnique({
+      where: { id: id },
+    });
+    if (!data) {
+      throw new HTTPError('User tidak ditemukan', 401);
+    }
+    return true;
+  },
+
+  // Check if refresh key availability 
+  isRefreshKeyAvailable: async (token) => {
+    const data = await prisma.refreshToken.findUnique({
+      where: { refresh_token: token }
+    });
+
+    if (!data) {
+      throw new HTTPError('Session sudah habis', 401);
+    }
+
+    const refreshToken = JWTUtils.verifyRefreshToken(data.refresh_token);
+    console.log(refreshToken);
+
+    return true
+  },
+
+  // POST User logout
+  logoutUser: async () => {
+    // 1. remove refresh token in database
+    // /refresh
+    // 1. verify refresh token jwt.verify and check database
+    // 2. check if verified or not
+    // 2.1 not verfied then return 401 Unaothorzed
+    // 2.2 if verified then remove old refresh token and update with new created refresh and access token
+    // 3. Set response cookie with new refresh and access token
+  },
 };
