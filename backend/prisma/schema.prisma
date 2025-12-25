@@ -118,3 +118,8 @@ model OrderDetail {
   @@id([product_id,order_id])
   @@map("order_detail")
 }
+
+model RefreshToken { 
+  refresh_token String @id
+  @@map("refresh_token")
+}
