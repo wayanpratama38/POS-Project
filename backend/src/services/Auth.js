@@ -79,22 +79,6 @@ export const AuthService = {
 		return true;
 	},
 
-	// Check if refresh key availability
-	isRefreshKeyAvailable: async (token) => {
-		const data = await prisma.refreshToken.findUnique({
-			where: {refresh_token: token},
-		});
-
-		if (!data) {
-			throw new HTTPError('Session sudah habis', 401);
-		}
-
-		const refreshToken = JWTUtils.verifyRefreshToken(data.refresh_token);
-		console.log(refreshToken);
-
-		return true;
-	},
-
 	// POST User logout
 	logoutUser: async (refreshToken) => {
 		await prisma.refreshToken.delete({
