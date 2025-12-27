@@ -36,15 +36,21 @@ Semua response nantinya akan memiliki standarisasi seperti ini.
 ### 2. Resource
 `Disini semua endpoint, request body, request parameter, dan response dituliskan sehingga semuanya bisa di tracking dari bagian resource saja.`
 
-| Method | Scenario                    | Endpoint       | Request                         | Response                | Status |
-| ------ | --------------------------- | -------------- | ------------------------------- | ----------------------- | ------ |
-| POST   | Create New Order            | /orders        | [[Request Body#Request Body 1]] | [[Response#Response 3]] |        |
-| GET    | Get Order Detail            | /orders/:id    |                                 | [[Response#Response 4]] |        |
-| GET    | Get All Product List        | /products      |                                 | [[Response#Response 1]] | ✅      |
-| POST   | Add One Product             | /products      | [[Request Body#Request Body 2]] | [[Response#Response 5]] | ✅      |
-| POST   | Add Bulk Product            | /products/bulk | [[Request Body#Request Body 3]] | [[Response#Response 6]] | ✅      |
-| PATCH  | Update Product Availability | /products/:id  |                                 | [[Response#Response 2]] |        |
-
+| No  | Method | Scenario                   | Endpoint        |
+| :-: | :----: | -------------------------- | --------------- |
+|  1  |  GET   | Get All Product List       | /products       |
+|  2  |  GET   | Get Product By Id          | /products/:id   |
+|  3  |  POST  | Add One Product            | /products       |
+|  4  |  POST  | Add Bulk Product           | /products/bulk  |
+|  5  | PATCH  | Update Product Information | /products/:id   |
+|  6  | DELETE | Delete Product             | /products/:id   |
+|  7  |  POST  | Create New Order           | /orders         |
+|  8  |  GET   | Get Order Detail           | /orders/:id     |
+|  9  |  GET   | Get All Order              | /orders         |
+| 10  |  POST  | Register New User          | /users/register |
+| 11  |  POST  | Login                      | /users/login    |
+| 12  |  POST  | Logout                     | /users/logout   |
+| 13  |  POST  | Refresh Token              | /refresh        |
 
 
 ---
