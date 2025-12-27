@@ -14,15 +14,15 @@ const RefreshController = {
 			// set new access and refresh token
 			res.cookie('accessToken', data.accessToken, {
 				httponly: true,
-				maxAge: '90000',
+				maxAge: 15 * 60 * 1000,
 				path: '/',
 				sameSite: 'strict',
 			});
 
 			res.cookie('refreshToken', data.refreshToken, {
 				httponly: true,
-				maxAge: '90000',
-				path: '/refresh',
+				maxAge: 7 * 24 * 60 * 60 * 1000,
+				path: '/',
 				sameSite: 'strict',
 			});
 
