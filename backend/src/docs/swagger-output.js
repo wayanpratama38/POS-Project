@@ -9,7 +9,7 @@ const swaggerOutput = {
 	basePath: '/',
 	schemes: ['http'],
 	paths: {
-		'/orders': {
+		'/api/orders': {
 			post: {
 				description: '',
 				responses: {
@@ -27,7 +27,7 @@ const swaggerOutput = {
 				},
 			},
 		},
-		'/orders/{id}': {
+		'/api/orders/{id}': {
 			get: {
 				description: '',
 				parameters: [
@@ -45,7 +45,7 @@ const swaggerOutput = {
 				},
 			},
 		},
-		'/users/register': {
+		'/api/users/register': {
 			post: {
 				description: '',
 				parameters: [
@@ -75,7 +75,7 @@ const swaggerOutput = {
 				},
 			},
 		},
-		'/users/login': {
+		'/api/users/login': {
 			post: {
 				description: '',
 				parameters: [
@@ -102,7 +102,7 @@ const swaggerOutput = {
 				},
 			},
 		},
-		'/products': {
+		'/api/products': {
 			post: {
 				description: '',
 				parameters: [
@@ -143,7 +143,7 @@ const swaggerOutput = {
 				},
 			},
 		},
-		'/products/bulk': {
+		'/api/products/bulk': {
 			post: {
 				description: '',
 				responses: {
@@ -153,7 +153,7 @@ const swaggerOutput = {
 				},
 			},
 		},
-		'/products/{id}': {
+		'/api/products/{id}': {
 			get: {
 				description: '',
 				parameters: [
@@ -199,6 +199,16 @@ const swaggerOutput = {
 				responses: {
 					200: {
 						description: 'OK',
+					},
+				},
+			},
+		},
+		'/refresh': {
+			post: {
+				description: '',
+				responses: {
+					201: {
+						description: 'Created',
 					},
 				},
 			},

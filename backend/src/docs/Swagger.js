@@ -14,6 +14,7 @@ const routes = [
 	'../routes/Order.js',
 	'../routes/Auth.js',
 	'../routes/Product.js',
+	'../routes/Refresh.js',
 ];
 
 swaggerAutogen({swagger: '2.0'})(outputFile, routes, options);
