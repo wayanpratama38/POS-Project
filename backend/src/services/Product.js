@@ -2,152 +2,152 @@ import prisma from '../config/DBConnection.js';
 import HTTPError from '../utils/HTTPError.js';
 
 export const ProductService = {
-	// POST Add New Product (singular)
-	addSingleProduct: async ({name, image, price, status, type}) => {
-		// check product is available or not
-		const isAvailable = await prisma.product.findFirst({
-			where: {name: name},
-		}); // return object if find one
+  // POST Add New Product (singular)
+  addSingleProduct: async ({ name, image, price, status, type }) => {
+    // check product is available or not
+    const isAvailable = await prisma.product.findFirst({
+      where: { name: name },
+    }); // return object if find one
 
-		// Check is item available
-		if (isAvailable) {
-			throw new HTTPError('Produk dengan nama yang sama sudah ada!', 401);
-		}
+    // Check is item available
+    if (isAvailable) {
+      throw new HTTPError('Produk dengan nama yang sama sudah ada!', 401);
+    }
 
-		// add new product
-		const productData = await prisma.product.create({
-			data: {
-				name: name,
-				image: image,
-				price: price,
-				status: status,
-				type: type,
-			},
-			select: {
-				id: true,
-				name: true,
-				image: true,
-				price: true,
-				status: true,
-				type: true,
-			},
-		});
+    // add new product
+    const productData = await prisma.product.create({
+      data: {
+        name: name,
+        image: image,
+        price: price,
+        status: status,
+        type: type,
+      },
+      select: {
+        id: true,
+        name: true,
+        image: true,
+        price: true,
+        status: true,
+        type: true,
+      },
+    });
 
-		return {...productData};
-	},
+    return { ...productData };
+  },
 
-	// POST Add New Product (bulk)
-	addBulkProduct: async (productList) => {
-		// check product input is already in database or not
-		const checkProductDuplicate = await Promise.all(
-			productList.map(async (product) => {
-				const data = await prisma.product.findFirst({
-					where: {name: product.name},
-				});
-				if (data !== null) return data.name;
-			})
-		);
+  // POST Add New Product (bulk)
+  addBulkProduct: async (productList) => {
+    // check product input is already in database or not
+    const checkProductDuplicate = await Promise.all(
+      productList.map(async (product) => {
+        const data = await prisma.product.findFirst({
+          where: { name: product.name },
+        });
+        if (data !== null) return data.name;
+      })
+    );
 
-		// filter the only the duplicated product founded
-		const checkProductDuplicateResult = checkProductDuplicate.filter(
-			(val) => val !== undefined
-		);
+    // filter the only the duplicated product founded
+    const checkProductDuplicateResult = checkProductDuplicate.filter(
+      (val) => val !== undefined
+    );
 
-		// check if there is product duplicated founded, and if founded throw error
-		if (checkProductDuplicateResult) {
-			throw new HTTPError(
-				`Terjadi duplikat produk dengan nama : ${checkProductDuplicateResult}`,
-				409
-			);
-		}
+    // check if there is product duplicated founded, and if founded throw error
+    if (checkProductDuplicateResult) {
+      throw new HTTPError(
+        `Terjadi duplikat produk dengan nama : ${checkProductDuplicateResult}`,
+        409
+      );
+    }
 
-		const productsData = await prisma.product.createManyAndReturn({
-			data: productList,
-			select: {
-				id: true,
-				name: true,
-				image: true,
-				price: true,
-				status: true,
-				type: true,
-			},
-		});
+    const productsData = await prisma.product.createManyAndReturn({
+      data: productList,
+      select: {
+        id: true,
+        name: true,
+        image: true,
+        price: true,
+        status: true,
+        type: true,
+      },
+    });
 
-		return productsData;
-	},
+    return productsData;
+  },
 
-	// GET Get All Product
-	getAllProduct: async () => {
-		const productsData = await prisma.product.findMany({
-			select: {
-				id: true,
-				name: true,
-				image: true,
-				price: true,
-				type: true,
-				status: true,
-			},
-		});
+  // GET Get All Product
+  getAllProduct: async () => {
+    const productsData = await prisma.product.findMany({
+      select: {
+        id: true,
+        name: true,
+        image: true,
+        price: true,
+        type: true,
+        status: true,
+      },
+    });
 
-		if (!productsData) {
-			throw new HTTPError('Produk belum ada', 404);
-		}
+    if (!productsData) {
+      throw new HTTPError('Produk belum ada', 404);
+    }
 
-		return productsData;
-	},
+    return productsData;
+  },
 
-	// GET Get Certain Product
-	getProductById: async (id) => {
-		const productData = await prisma.product.findFirst({
-			where: {
-				id: id,
-			},
-			select: {
-				name: true,
-				image: true,
-				price: true,
-				type: true,
-				status: true,
-			},
-		});
+  // GET Get Certain Product
+  getProductById: async (id) => {
+    const productData = await prisma.product.findFirst({
+      where: {
+        id: id,
+      },
+      select: {
+        name: true,
+        image: true,
+        price: true,
+        type: true,
+        status: true,
+      },
+    });
 
-		if (!productData) {
-			throw new HTTPError('Produk dengan ID tersebut tidak ditemukan', 404);
-		}
+    if (!productData) {
+      throw new HTTPError('Produk dengan ID tersebut tidak ditemukan', 404);
+    }
 
-		return {...productData};
-	},
+    return { ...productData };
+  },
 
-	// PATCH Update Product Information
-	updateProductInformation: async (id, newInformation) => {
-		// Check if product data is available
-		await this.getProductById(id);
+  // PATCH Update Product Information
+  updateProductInformation: async (id, newInformation) => {
+    // Check if product data is available
+    await this.getProductById(id);
 
-		const productData = await prisma.product.update({
-			where: {
-				id: id,
-			},
-			data: {...newInformation},
-			select: {
-				name: true,
-				image: true,
-				price: true,
-				type: true,
-				status: true,
-			},
-		});
+    const productData = await prisma.product.update({
+      where: {
+        id: id,
+      },
+      data: { ...newInformation },
+      select: {
+        name: true,
+        image: true,
+        price: true,
+        type: true,
+        status: true,
+      },
+    });
 
-		return {...productData};
-	},
+    return { ...productData };
+  },
 
-	// DELETE Delete Certain Product
-	deleteProduct: async (id) => {
-		// Check if product data is available
-		await this.getProductById(id);
+  // DELETE Delete Certain Product
+  deleteProduct: async (id) => {
+    // Check if product data is available
+    await this.getProductById(id);
 
-		// Delete data
-		await prisma.product.delete({
-			where: {id: id},
-		});
-	},
+    // Delete data
+    await prisma.product.delete({
+      where: { id: id },
+    });
+  },
 };
