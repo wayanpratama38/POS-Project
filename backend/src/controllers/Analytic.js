@@ -1,6 +1,6 @@
-import AnalyticService from '../services/Analytic.js'
+import { AnalyticService } from '../services/Analytic.js'
 
-export default AnalyticController = {
+export const AnalyticController = {
 
   countRevenue: async (req, res, next) => {
     const revenue = await AnalyticService.countRevenue();

@@ -1,7 +1,7 @@
-import prisma from "../config/DBConnection"
+import prisma from "../config/DBConnection.js"
 
 
-export default AnalyticService = {
+export const AnalyticService = {
   // Count revenue from order table
   countRevenue: async () => {
     const revenue = await prisma.order.aggregate({
@@ -9,9 +9,6 @@ export default AnalyticService = {
         total_price: true
       }
     });
-
-    return revenue;
-
+    return revenue._sum.total_price;
   },
-
 }
