@@ -1,45 +1,46 @@
 import prisma from '../config/DBConnection.js';
 import { ProductService } from './Product.js';
 
+
+// Get the product information, and return id, quantity, note, current price, and sub total price
+const getProductInformation = async (items) => {
+  return Promise.all(
+    items.map(async (item) => {
+      const data = await ProductService.getProductById(item.id);
+      return {
+        id: item.id,
+        quantity: item.quantity,
+        note: item.notes || '',
+        current_price: data.price,
+        sub_total_price: data.price * item.quantity,
+      };
+    })
+  );
+}
+
+// Count total price of the selected items/products
+const countTotalPrice = (items) => {
+  return items.reduce((sum, item) => sum + item.sub_total_price, 0);
+}
+
 export const OrderService = {
-  // Count total price of the selected items/products
-  countTotalPrice: (items) => {
-    return items.reduce((sum, item) => sum + item.sub_total_price, 0);
-  },
-
-  // Get the product information, and return id, quantity, note, current price, and sub total price
-  getProductInformation: async (items) => {
-    return Promise.all(
-      items.map(async (item) => {
-        const data = await ProductService.getProductById(item.id);
-
-        return {
-          id: item.id,
-          quantity: item.quantity,
-          note: item.notes || '',
-          current_price: data.price,
-          sub_total_price: data.price * item.quantity,
-        };
-      })
-    );
-  },
-
   // POST Create New Order
-  addOrder: async (item) => {
+  addOrder: async (item, employeeId) => {
     // 1.Get id of the item
     const { customer_name, order_type, table_number, payment_method, items } = {
       ...item,
     };
 
     // 2.Get Product information and total price
-    const productInformations = await this.getProductInformation(items);
-    const totalPrice = this.countTotalPrice(productInformations);
+    const productInformations = await getProductInformation(items);
+    const totalPrice = countTotalPrice(productInformations);
 
     return prisma.$transaction(async (tx) => {
       // 3.create new order
       const order = await tx.order.create({
         data: {
           customer_name: customer_name,
+          employee_id: employeeId,
           table_number: table_number,
           type: order_type,
           payment_method: payment_method,
@@ -49,6 +50,7 @@ export const OrderService = {
         select: {
           id: true,
           customer_name: true,
+          employee_id: true,
           ...(order_type === 'dine_in' && { table_number: true }), //  This make sure to return table number if dine_in
           payment_method: true,
           total_price: true,
@@ -64,7 +66,6 @@ export const OrderService = {
             data: {
               order_id: order.id,
               product_id: item.id,
-              // employee_id: user.id, none for now, cause we need to make authentication hehe
               current_price: item.current_price,
               sub_total_price: item.sub_total_price,
               note: item.note,

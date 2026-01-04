@@ -56,7 +56,7 @@ model User {
   // Enumerate reference
   role Role @default(employee)
 
-  handled_order OrderDetail[]
+  handled_order Order[]
 
   @@map("users")
 }
@@ -82,6 +82,7 @@ model Product {
 model Order {
   id String @id @default(uuid())
   customer_name String?
+  employee_id String
   table_number Int?
   total_price Decimal
   created_at DateTime @default(now())
@@ -93,15 +94,16 @@ model Order {
 
   // Reference for OrderDetail 
   order_items OrderDetail[]
-
+  
+  // Reference for User
+  employee User @relation(fields: [employee_id],references : [id])
   @@map("orders")
-}
 
+}
 
 model OrderDetail {
   product_id String
   order_id String
-  employee_id String?
   current_price Decimal
   sub_total_price Decimal
   quantity Int
@@ -112,7 +114,6 @@ model OrderDetail {
   // Enumerate reference
   product Product @relation(fields: [product_id], references: [id])
   order Order @relation(fields: [order_id], references: [id])
-  employee User? @relation(fields: [employee_id], references: [id])
 
   // Composite Primary Key
   @@id([product_id,order_id])

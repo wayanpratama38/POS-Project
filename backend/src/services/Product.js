@@ -111,6 +111,8 @@ export const ProductService = {
       },
     });
 
+    console.log("IN GET PRODUCT ID ", productData)
+
     if (!productData) {
       throw new HTTPError('Produk dengan ID tersebut tidak ditemukan', 404);
     }
