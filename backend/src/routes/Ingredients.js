@@ -20,4 +20,16 @@ IngredientRouter.patch(
 	'/api/ingredients/:id',
 	IngredientController.updateIngredientInformation
 );
+IngredientRouter.post(
+	'/api/ingredients/:id/purchase',
+	IngredientController.purchaseIngredient
+);
+IngredientRouter.post(
+	'/api/ingredients/:id/adjust',
+	IngredientController.adjustIngredient
+);
+IngredientRouter.get(
+	'/api/ingredients/low-stock',
+	IngredientController.getLowStockIngredient
+);
 export default IngredientRouter;

@@ -79,4 +79,52 @@ export const IngredientController = {
 			next(err);
 		}
 	},
+
+	// POST purchase new ingredient and update ingredient table
+	async purchaseIngredient(req, res, next) {
+		const data = req.body;
+		const {id} = req.params;
+
+		try {
+			const dataLog = IngredientService.purchaseIngridient({...data, id});
+			return res.status(201).json({
+				status: 'success',
+				message: 'Berhasil membeli bahan',
+				data: dataLog,
+			});
+		} catch (err) {
+			next(err);
+		}
+	},
+
+	// POST doing adjusment for real situation and system, for syncrhonizing
+	async adjustIngredient(req, res, next) {
+		const data = req.body;
+		const {id} = req.params;
+
+		try {
+			const dataLog = await IngredientService.adjustIngridient({...data, id});
+			return res.status(201).json({
+				status: 'success',
+				message: 'Berhasil mengadjust bahan',
+				data: dataLog,
+			});
+		} catch (err) {
+			next(err);
+		}
+	},
+
+	// GET get information about ingredient with stock lower than minimum stock
+	async getLowStockIngredient(req, res, next) {
+		try {
+			const data = await IngredientService.getLowStockIngredient();
+			return res.status(200).json({
+				status: 'success',
+				message: 'Berhasil mendapatkan bahan yang kurang dari minimum_stock',
+				data: data,
+			});
+		} catch (err) {
+			next(err);
+		}
+	},
 };
