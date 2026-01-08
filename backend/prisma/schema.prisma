@@ -46,6 +46,24 @@ enum OrderTransactionStatus {
   fail
 }
 
+enum UnitType {
+  gram // g 
+  kilogram // kg
+  mililiter // ml
+  liter // l
+  piece // pcs
+  tablespoon // tbsp
+  cup // cup
+  teaspoon // tsp
+}
+
+enum TransactionType {
+  purchase // purchase or restock type
+  consumption // consumption for any transaction
+  wastage // when there is spilleage, breakage, expiry
+  adjusment // if there is manual correction
+}
+
 model User {
   id String @id @default(uuid())
   username String @unique
@@ -57,6 +75,7 @@ model User {
   role Role @default(employee)
 
   handled_order Order[]
+  stock_adjustments StockAdjusment[]
 
   @@map("users")
 }
@@ -75,6 +94,7 @@ model Product {
 
   // Reference for OrderDetail 
   order_items OrderDetail[]
+  recipe_ingridients Recipe[]
 
   @@map("products")
 }
@@ -123,4 +143,70 @@ model OrderDetail {
 model RefreshToken { 
   refresh_token String @id
   @@map("refresh_token")
+}
+
+model Ingredient {
+  id String @id @default(uuid())
+  name String @unique 
+  unit UnitType 
+  current_stock Decimal @default(0)
+  minimum_stock Decimal @default(0)
+  cost_per_unit Decimal? 
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  recipe_usages Recipe[]
+  transactions IngredientTransaction[]
+  adjusments StockAdjusment[]
+
+  @@map("ingredients")
+}
+
+model Recipe {
+  id String @id @default(uuid())
+  product_id String
+  ingredient_id String
+  quantity_required Decimal
+  
+  // Relations
+  product Product @relation(fields:[product_id],references : [id], onDelete : Cascade)
+  ingredient Ingredient @relation(fields:[ingredient_id], references :[id], onDelete :Cascade)
+
+  @@unique([product_id,ingredient_id]) // make sure one product id using one ingridient, don't repeat same ingridient
+  @@index([product_id])
+  @@index([ingredient_id])
+  @@map("recipes")
+}
+
+model IngredientTransaction {
+ id String @id @default(uuid())
+ ingredient_id String
+ type TransactionType
+ quantity Decimal // positive for additions and negative number for deductions
+ reference_id String?
+ note String?
+ created_at DateTime @default(now()) 
+
+ ingredient Ingredient @relation(fields: [ingredient_id], references: [id])
+
+ @@index([ingredient_id])
+ @@index([reference_id])
+ @@index([type])
+ @@map("ingredient_transactions")
+}
+
+model StockAdjusment {
+ id String @id @default(uuid())
+ ingredient_id String
+ adjusted_by String
+ quantity_delta Decimal // positive or negative number
+ reason String
+ created_at DateTime @default(now())
+
+ ingredient Ingredient @relation(fields: [ingredient_id], references: [id])
+ user User @relation(fields: [adjusted_by],references: [id])
+
+ @@index([ingredient_id])
+ @@map("stock_adjustments")
 }
